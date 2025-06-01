@@ -1,0 +1,4 @@
+type,level,question,option_a,option_b,option_c,option_d,correct,audio_url
+grammar,A1,Choose the correct form: He ___ a book.,read,reads,is reading,reading,b,
+idiom,B2,Choose the correct idiom: It's raining ___.,cats and dogs,like hell,hard rain,buckets,a,
+listening,A2,What did the speaker say?,yes,no,maybe,I don’t know,c,https://example.com/audio.mp3
