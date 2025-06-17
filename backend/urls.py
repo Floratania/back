@@ -33,6 +33,7 @@ urlpatterns = [
     path('api/translator/', include('translator.urls')),
     path('api/tense/', include('tense_classifier.urls')),
     path('api/partofspeech/', include('partofspeech.urls')),
+    path('api/pronunciation/', include('pronunciation.urls')),
 
 
     

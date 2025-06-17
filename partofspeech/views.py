@@ -72,11 +72,10 @@ nlp = spacy.load("en_core_web_sm")
 nltk.download("brown")
 nltk.download("punkt")
 
-ALLOWED_POS = {"NOUN", "VERB", "ADJ", "ADV", "ADP"}  # додай ще за потребою
-
+ALLOWED_POS = {"NOUN", "VERB", "ADJ", "ADV", "ADP"}
 class NLPPracticeView(APIView):
     def get(self, request):
-        mode = request.query_params.get("type", "word")  # word|sentence
+        mode = request.query_params.get("type", "word") 
         lang = request.query_params.get("lang", "uk")
 
         if mode == "sentence":
@@ -86,7 +85,7 @@ class NLPPracticeView(APIView):
             target = random.choice(candidates) if candidates else doc[0]
             text = target.text
         else:
-            # Генерація одного слова з фільтрацією
+            
             while True:
                 word = random.choice(brown.words(categories="news"))
                 doc = nlp(word)
@@ -97,7 +96,7 @@ class NLPPracticeView(APIView):
             text = target.text
             sentence = ""
 
-        # 🔁 Переклад через твою локальну функцію
+       
         translated = local_translate(text, direction="en_to_uk")
 
         return Response({

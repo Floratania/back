@@ -31,7 +31,7 @@ router = DefaultRouter()
 router.register(r'flashcards', FlashcardViewSet, basename='flashcards')
 router.register(r'wordsets', WordSetViewSet, basename='wordsets')
 router.register(r'progress', UserFlashcardProgressViewSet, basename='progress')
-router.register(r'user-preferences', UserTrainingPreferencesViewSet, basename='user-preferences')  # ✅
+router.register(r'user-preferences', UserTrainingPreferencesViewSet, basename='user-preferences')  
 
 urlpatterns = [
     path('', include(router.urls)),

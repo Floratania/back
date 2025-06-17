@@ -81,28 +81,28 @@ def predict_tense(request):
 
 
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'model_3', 'tense_correctness_model_3')
-tokenizer_2 = BertTokenizer.from_pretrained(MODEL_PATH)
-model_2 = BertForSequenceClassification.from_pretrained(MODEL_PATH)
-model_2.eval()
+# MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'model_3', 'tense_correctness_model_3')
+# tokenizer_2 = BertTokenizer.from_pretrained(MODEL_PATH)
+# model_2 = BertForSequenceClassification.from_pretrained(MODEL_PATH)
+# model_2.eval()
 
-@csrf_exempt
-def check_grammar(request):
-    if request.method == 'POST':
-        import json
-        data = json.loads(request.body)
-        sentence = data.get("sentence")
+# @csrf_exempt
+# def check_grammar(request):
+#     if request.method == 'POST':
+#         import json
+#         data = json.loads(request.body)
+#         sentence = data.get("sentence")
 
-        if not sentence:
-            return JsonResponse({'error': 'Sentence is required.'}, status=400)
+#         if not sentence:
+#             return JsonResponse({'error': 'Sentence is required.'}, status=400)
 
-        # Токенізація
-        inputs = tokenizer_2(sentence, return_tensors="pt", padding=True, truncation=True, max_length=64)
-        with torch.no_grad():
-            outputs = model_2(**inputs)
-            prediction = torch.argmax(outputs.logits, dim=1).item()
+#         # Токенізація
+#         inputs = tokenizer_2(sentence, return_tensors="pt", padding=True, truncation=True, max_length=64)
+#         with torch.no_grad():
+#             outputs = model_2(**inputs)
+#             prediction = torch.argmax(outputs.logits, dim=1).item()
 
-        result = "correct" if prediction == 1 else "incorrect"
-        return JsonResponse({'result': result})
+#         result = "correct" if prediction == 1 else "incorrect"
+#         return JsonResponse({'result': result})
 
-    return JsonResponse({'error': 'Only POST method allowed.'}, status=405)
+#     return JsonResponse({'error': 'Only POST method allowed.'}, status=405)

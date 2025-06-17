@@ -18,6 +18,11 @@ from .serializers import UserProfileSerializer
 from rest_framework import generics, permissions
 from .models import UserProfile
 from .serializers import UserProfileSerializer
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.contrib.auth.models import User
+import re
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
@@ -37,6 +42,34 @@ class DeleteUserView(generics.DestroyAPIView):
         return Response({"detail": "User deleted successfully."})
 
 
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        # 🔐 Перевірка старого пароля
+        if not user.check_password(old_password):
+            return Response({'error': 'Неправильний старий пароль'}, status=400)
+
+        # 🔐 Валідація нового пароля
+        if len(new_password) < 8 \
+            or not re.search(r'[A-Za-z]', new_password) \
+            or not re.search(r'\d', new_password) \
+            or not re.search(r'[^\w\s]', new_password):
+            return Response({
+                'error': 'Новий пароль має бути мінімум 8 символів, містити букви, цифри та спецсимволи'
+            }, status=400)
+
+        # 🔁 Оновлення пароля
+        user.set_password(new_password)
+        user.save()
+
+        return Response({'message': 'Пароль успішно змінено'}, status=200)
 
 class RegisterView(APIView):
     def post(self, request):

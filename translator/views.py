@@ -2,7 +2,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from transformers import MarianMTModel, MarianTokenizer, AutoTokenizer, AutoModelForSeq2SeqLM
 
-# --- Ініціалізація моделей один раз
 marian_en_uk_tokenizer = MarianTokenizer.from_pretrained('Helsinki-NLP/opus-mt-en-uk')
 marian_en_uk_model = MarianMTModel.from_pretrained('Helsinki-NLP/opus-mt-en-uk')
 
@@ -14,7 +13,6 @@ nllb_model = AutoModelForSeq2SeqLM.from_pretrained("facebook/nllb-200-distilled-
 
 
 def detect_mode(text):
-    """Автовизначення: якщо 1 слово — використовуємо word-mode"""
     word_count = len(text.strip().split())
     return 'word' if word_count == 1 else 'sentence'
 
@@ -27,7 +25,6 @@ def translation_view(request):
     if not text:
         return Response({'error': 'Empty input'}, status=400)
 
-    # Автовизначення режиму
     mode = detect_mode(text)
 
     try:
@@ -40,7 +37,7 @@ def translation_view(request):
             nllb_tokenizer.src_lang = src
             inputs = nllb_tokenizer(text, return_tensors="pt")
             inputs["forced_bos_token_id"] = nllb_tokenizer.convert_tokens_to_ids(tgt)
-            # outputs = nllb_model.generate(**inputs, max_length=50)
+      
             outputs = nllb_model.generate(
                 **inputs,
                 max_length=50,
@@ -58,7 +55,7 @@ def translation_view(request):
                 model = marian_uk_en_model
 
             inputs = tokenizer.encode(text, return_tensors='pt')
-            # translated_ids = model.generate(inputs, max_length=60, num_beams=4, early_stopping=True)
+        
             translated_ids = model.generate(
                 inputs,
                 max_length=80,

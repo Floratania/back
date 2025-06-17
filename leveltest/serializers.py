@@ -1,8 +1,7 @@
-# leveltest/serializers.py
 from rest_framework import serializers
-from leveltest.models import LevelQuestion
+from .models import LevelQuestion
 
 class LevelQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = LevelQuestion
-        exclude = ['correct']  # don’t send answer to frontend
+        fields = ['id', 'question', 'type', 'level', 'option_a', 'option_b', 'option_c', 'option_d', 'correct']

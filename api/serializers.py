@@ -15,12 +15,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', {})
 
-        # Оновлюємо профіль
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
 
-        # Оновлюємо user
         user = instance.user
         for attr, value in user_data.items():
             setattr(user, attr, value)

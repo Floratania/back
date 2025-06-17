@@ -8,10 +8,15 @@ class FlashcardSerializer(serializers.ModelSerializer):
         fields = ['id', 'word', 'definition', 'set']
 
 class WordSetSerializer(serializers.ModelSerializer):
+    user_has_subscribed = serializers.SerializerMethodField()
+
     class Meta:
         model = WordSet
-        fields = ['id', 'name', 'is_public', 'owner']
-        read_only_fields = ['owner']
+        fields = ['id', 'name', 'is_public', 'owner', 'user_has_subscribed']
+
+    def get_user_has_subscribed(self, obj):
+        user = self.context['request'].user
+        return obj.userwordset_set.filter(user=user).exists()
 
 
 class UserFlashcardProgressSerializer(serializers.ModelSerializer):

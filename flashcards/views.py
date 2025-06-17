@@ -56,6 +56,9 @@ class WordSetViewSet(viewsets.ModelViewSet):
             Q(owner=user)
         ).distinct()
 
+    def get_serializer_context(self):
+        return {'request': self.request}
+
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
@@ -64,6 +67,16 @@ class WordSetViewSet(viewsets.ModelViewSet):
         wordset = self.get_object()
         UserWordSet.objects.get_or_create(user=request.user, wordset=wordset)
         return Response({'status': f'Subscribed to {wordset.name}'})
+    
+    @action(detail=True, methods=['post'])
+    def unsubscribe(self, request, pk=None):
+        wordset = self.get_object()
+        deleted, _ = UserWordSet.objects.filter(user=request.user, wordset=wordset).delete()
+        if deleted:
+            return Response({'status': f'Unsubscribed from {wordset.name}'})
+        else:
+            return Response({'error': 'Ви не були підписані на цей набір'}, status=400)
+
 
     @action(detail=False, methods=['post'])
     def import_from_file(self, request):

@@ -1,50 +1,70 @@
-
 from openai import OpenAI
+import json
 
 client = OpenAI(
-    api_key='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',
+    api_key='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',
     base_url="https://openrouter.ai/api/v1"
 )
 
-def generate_ai_questions(level="B1", count=10):
-    prompt = f"""You are an English placement test generator.
+def generate_ai_questions(level="B1", count=7):
+    prompt = f"""
+You are an expert English test designer.
 
+Generate {count} **challenging** and **realistic** multiple-choice questions in English at CEFR level {level}.
 
-Create {count} multiple-choice questions to determine the English level of a learner at CEFR level {level}.
-Each question must be appropriate for evaluating level {level} and should focus on:
-- Grammar
-- Vocabulary
-- Sentence structure
-- Reading comprehension
-- Everyday communication
+Focus on:
+- Tense usage (past, present, etc.)
+- Word order and grammar
+- Subject-verb agreement
+- Vocabulary appropriate to {level}
 
-Each question must contain:
-- A clear question text
-- Four answer options labeled A–D
-- One correct answer label ("A", "B", "C", or "D")
+Each question must:
+- Be concise, natural, and meaningful
+- Have 4 plausible options (A–D), **only one correct**
+- Avoid giving away answers through obvious errors or unnatural phrasing
+- **Avoid made-up words** or incorrect conjugation forms like "readed" or "yesterday-ed"
+- Use real-life context when possible
 
-Format the response as a JSON array like this:
+Output strictly valid JSON array of {count} questions using this format:
 [
   {{
-    "question": "Which of these is the correct past tense of 'go'?",
+    "question": "Choose the correct sentence.",
     "options": {{
-      "A": "goed",
-      "B": "went",
-      "C": "gone",
-      "D": "go"
+      "A": "...",
+      "B": "...",
+      "C": "...",
+      "D": "..."
     }},
-    "correct": "B",
-    "source_level": "B1"
-  }},
-  ...
+    "correct": "C",
+    "source_level": "{level}"
+  }}
 ]
-Only include the array, nothing else.
+
+Example:
+{{
+  "question": "Which sentence is correct?",
+  "options": {{
+    "A": "She go to work every day.",
+    "B": "She goes to work every day.",
+    "C": "She going to work every day.",
+    "D": "She gone to work every day."
+  }},
+  "correct": "B",
+  "source_level": "{level}"
+}}
+
+Now generate the questions only in the format above.
 """
 
+
     response = client.chat.completions.create(
-        # model="nousresearch/deephermes-3-mistral-24b-preview:free",
         model="mistralai/mistral-7b-instruct",
         messages=[{"role": "user", "content": prompt}]
     )
 
-    return response.choices[0].message.content
+    raw = response.choices[0].message.content.strip()
+
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        raise Exception("AI returned invalid JSON")
